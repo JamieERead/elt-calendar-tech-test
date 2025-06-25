@@ -1,29 +1,45 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import styled from 'styled-components';
 import moment from 'moment';
+import { EventFormData } from '../common/types';
 
 interface AddEventModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (event: { name: string; start: Date; end: Date }) => void;
+  onSave: (event: EventFormData) => void;
+  initialEvent?: EventFormData;
 }
 
 export const AddEventModal = ({
   isOpen,
   onClose,
   onSave,
+  initialEvent,
 }: AddEventModalProps) => {
-  const [name, setName] = useState('');
+  const [title, setTitle] = useState('');
   const [start, setStart] = useState(moment().format('YYYY-MM-DDTHH:mm'));
   const [end, setEnd] = useState(
     moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm'),
   );
 
+  // Sync props to state when initialEvent changes or modal opens
+  useEffect(() => {
+    if (initialEvent) {
+      setTitle(initialEvent.title);
+      setStart(moment(initialEvent.start).format('YYYY-MM-DDTHH:mm'));
+      setEnd(moment(initialEvent.end).format('YYYY-MM-DDTHH:mm'));
+    } else {
+      setTitle('');
+      setStart(moment().format('YYYY-MM-DDTHH:mm'));
+      setEnd(moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm'));
+    }
+  }, [initialEvent, isOpen]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
-      name,
+      title,
       start: new Date(start),
       end: new Date(end),
     });
@@ -40,10 +56,10 @@ export const AddEventModal = ({
       <Title>Create New Event</Title>
       <Form onSubmit={handleSubmit}>
         <Label>
-          Event Name:
+          Event Title:
           <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
           />
         </Label>

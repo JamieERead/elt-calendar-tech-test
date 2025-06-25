@@ -19,7 +19,7 @@ describe('AddEventModal', () => {
   it('renders modal with form fields', () => {
     setup();
     expect(screen.getByText('Create New Event')).toBeInTheDocument();
-    expect(screen.getByLabelText('Event Name:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Event Title:')).toBeInTheDocument();
     expect(screen.getByLabelText('Start:')).toHaveValue(now);
     expect(screen.getByLabelText('End:')).toHaveValue(oneHourLater);
   });
@@ -27,7 +27,7 @@ describe('AddEventModal', () => {
   it('calls onSave and onClose with correct data on submit', () => {
     const { onSave, onClose } = setup();
 
-    fireEvent.change(screen.getByLabelText('Event Name:'), {
+    fireEvent.change(screen.getByLabelText('Event Title:'), {
       target: { value: 'My Test Event' },
     });
 
@@ -42,7 +42,7 @@ describe('AddEventModal', () => {
     fireEvent.click(screen.getByText('Save'));
 
     expect(onSave).toHaveBeenCalledWith({
-      name: 'My Test Event',
+      title: 'My Test Event',
       start: new Date('2025-01-01T10:00'),
       end: new Date('2025-01-01T11:00'),
     });

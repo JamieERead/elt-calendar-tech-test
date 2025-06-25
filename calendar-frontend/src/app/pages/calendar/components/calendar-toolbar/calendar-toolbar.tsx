@@ -1,10 +1,11 @@
-import { EltEvent } from '../../../../common/types';
+import { EltEvent, EventFormData } from '../../../../common/types';
 import { Dispatch, useState } from 'react';
 import { ToolbarStyle } from './styles/calendar-toolbar-style';
 import { AddEventModal } from '../../../../components/add-event-modal';
 
 interface ICalendarToolbarProps {
   addEvent: (event: Omit<EltEvent, 'id'>) => Promise<void>;
+  updateEvent: (event: EltEvent) => void;
   showIds: boolean;
   setShowIds: Dispatch<boolean>;
   selectedEvent?: EltEvent;
@@ -12,29 +13,54 @@ interface ICalendarToolbarProps {
 
 export const CalendarToolbar = ({
   addEvent,
+  updateEvent,
   showIds,
   setShowIds,
   selectedEvent,
 }: ICalendarToolbarProps) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const editEvent = (event?: EltEvent) => {
-    console.log('todo');
+  const onSave = ({ title, start, end }: EventFormData) => {
+    if (isEditing && selectedEvent) {
+      updateEvent({ ...selectedEvent, title, start, end });
+    } else {
+      addEvent({ title, start, end });
+    }
+    setModalOpen(false);
   };
 
   return (
     <div css={ToolbarStyle}>
-      <button data-testid="add-event-btn" onClick={() => setModalOpen(true)}>
-        Add event
-      </button>
       <AddEventModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        onSave={({ name, start, end }) => addEvent({ title: name, start, end })}
+        onSave={onSave}
+        initialEvent={
+          isEditing && selectedEvent?.start && selectedEvent?.end
+            ? {
+                title: selectedEvent.title,
+                start: selectedEvent.start,
+                end: selectedEvent.end,
+              }
+            : undefined
+        }
       />
       <button
+        data-testid="add-event-btn"
+        onClick={() => {
+          setIsEditing(false);
+          setModalOpen(true);
+        }}
+      >
+        Add event
+      </button>
+      <button
         data-testid="edit-event-btn"
-        onClick={() => editEvent(selectedEvent)}
+        onClick={() => {
+          setIsEditing(true);
+          setModalOpen(true);
+        }}
         disabled={!selectedEvent}
       >
         Edit event

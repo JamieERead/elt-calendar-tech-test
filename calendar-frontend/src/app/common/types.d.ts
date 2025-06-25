@@ -10,3 +10,5 @@ export type CalendarEventUpdatePayload = {
   start: string | Date;
   end: string | Date;
 };
+
+export type EventFormData = Omit<EltEvent, 'id'>;
