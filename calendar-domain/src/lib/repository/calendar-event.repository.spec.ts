@@ -121,6 +121,43 @@ describe('CalendarEventRepository', () => {
       });
     });
 
+    describe('updateEvent', () => {
+      beforeEach(async () => {
+        await em.nativeDelete(CalendarEventEntity, {}); // clear all data
+      });
+
+      it('should update an event', async () => {
+        const entity = em.create(CalendarEventEntity, {
+          name: 'original event',
+          start: new Date('2025-01-14T09:00:00'),
+          end: new Date('2025-01-14T10:00:00'),
+        });
+        await em.persistAndFlush(entity);
+
+        await repository.updateEvent(
+          entity.id,
+          'new event',
+          new Date('2025-01-14T10:00:00'),
+          new Date('2025-01-14T11:00:00'),
+        );
+
+        const result = await em.find(CalendarEventEntity, {
+          name: 'new event',
+        });
+
+        expect(result.map((e) => wrap(e).toObject())).toEqual([
+          {
+            id: entity.id,
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+            name: 'new event',
+            start: new Date('2025-01-14T10:00:00'),
+            end: new Date('2025-01-14T11:00:00'),
+          },
+        ]);
+      });
+    });
+
     describe('deleteById', () => {
       it('should delete by id', async () => {
         const existingEvent = (await repository.find({}))[0];

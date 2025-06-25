@@ -3,11 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CalendarController } from './calendar.controller';
 import { CalendarService } from './calendar.service';
 import { mockCalendarEventEntity } from '../mocks/events.mock';
+import { EntityManager } from '@mikro-orm/knex';
 
 describe('CalendarController', () => {
   let app: TestingModule;
   let controller: CalendarController;
-  const calendarService = new CalendarService(null);
+  const mockEntityManager = { flush: jest.fn() } as unknown as EntityManager;
+  const calendarService = new CalendarService(null, mockEntityManager);
 
   beforeAll(async () => {
     app = await Test.createTestingModule({

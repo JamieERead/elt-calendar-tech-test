@@ -1,6 +1,10 @@
 import { CalendarService } from './calendar.service';
 import { CalendarEventRepository } from '@fs-tech-test/calendar-domain';
 import { mockCalendarEventEntity } from '../mocks/events.mock';
+import { EntityManager } from '@mikro-orm/knex';
+
+const flush = jest.fn();
+const mockEntityManager = { flush } as unknown as EntityManager;
 
 describe('CalendarService', () => {
   let service: CalendarService;
@@ -8,7 +12,7 @@ describe('CalendarService', () => {
     new CalendarEventRepository(null, null);
 
   beforeAll(async () => {
-    service = new CalendarService(calendarEventRepository);
+    service = new CalendarService(calendarEventRepository, mockEntityManager);
   });
 
   describe('getEvents', () => {
@@ -53,6 +57,25 @@ describe('CalendarService', () => {
       await service.deleteEvent(111);
 
       expect(deleteById).toHaveBeenCalledWith(111);
+    });
+  });
+
+  describe('updateEvent', () => {
+    it('should update a new event', async () => {
+      const updateEvent = jest
+        .spyOn(calendarEventRepository, 'updateEvent')
+        .mockResolvedValue(mockCalendarEventEntity);
+
+      const start = '2024-10-09T15:00:00';
+      const end = '2024-10-09T17:00:00';
+      await service.updateEvent(1, { name: 'Mock event #1', start, end });
+
+      expect(updateEvent).toHaveBeenCalledWith(
+        1,
+        'Mock event #1',
+        new Date(start),
+        new Date(end),
+      );
     });
   });
 });
