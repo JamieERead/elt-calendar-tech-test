@@ -20,14 +20,23 @@ export const CalendarToolbar = ({
 }: ICalendarToolbarProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState('');
 
-  const onSave = ({ title, start, end }: EventFormData) => {
-    if (isEditing && selectedEvent) {
-      updateEvent({ ...selectedEvent, title, start, end });
-    } else {
-      addEvent({ title, start, end });
+  const onSave = async ({ title, start, end }: EventFormData) => {
+    try {
+      if (isEditing && selectedEvent) {
+        await updateEvent({ ...selectedEvent, title, start, end });
+      } else {
+        await addEvent({ title, start, end });
+      }
+      setModalOpen(false);
+    } catch (error: any) {
+      if (error?.response?.status === 400 && error?.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError('Something went wrong.');
+      }
     }
-    setModalOpen(false);
   };
 
   return (
@@ -74,6 +83,7 @@ export const CalendarToolbar = ({
         ></input>
         Show ids
       </label>
+      {error && <div style={{ color: 'red' }}>{error}</div>}
     </div>
   );
 };

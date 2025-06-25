@@ -87,6 +87,45 @@ describe('CalendarToolbarComponent', () => {
         end: new Date('2025-01-01T11:00'),
       });
     });
+
+    it('should show validation error if addEvent fails with 400', async () => {
+      addEvent = jest.fn().mockRejectedValue({
+        isAxiosError: true,
+        response: {
+          status: 400,
+          data: { message: 'Conflict with existing event' },
+        },
+      });
+
+      render(
+        <CalendarToolbar
+          addEvent={addEvent}
+          updateEvent={updateEvent}
+          showIds={false}
+          setShowIds={setShowIds}
+        />,
+      );
+
+      fireEvent.click(screen.getByTestId('add-event-btn'));
+
+      fireEvent.change(screen.getByLabelText(/Event Title:/i), {
+        target: { value: 'Conflicting Event' },
+      });
+      fireEvent.change(screen.getByLabelText(/Start:/i), {
+        target: { value: '2025-01-01T10:00' },
+      });
+      fireEvent.change(screen.getByLabelText(/End:/i), {
+        target: { value: '2025-01-01T11:00' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+      await waitFor(() =>
+        expect(
+          screen.getByText('Conflict with existing event'),
+        ).toBeInTheDocument(),
+      );
+    });
   });
 
   describe('Edit event button', () => {

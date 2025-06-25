@@ -3,8 +3,15 @@ import { CalendarEventRepository } from '@fs-tech-test/calendar-domain';
 import { mockCalendarEventEntity } from '../mocks/events.mock';
 import { EntityManager } from '@mikro-orm/knex';
 
-const flush = jest.fn();
-const mockEntityManager = { flush } as unknown as EntityManager;
+const mockQueryBuilder = {
+  where: jest.fn().mockReturnThis(),
+  andWhere: jest.fn().mockReturnThis(),
+  getSingleResult: jest.fn().mockResolvedValue(null),
+};
+const mockEntityManager = {
+  flush: jest.fn(),
+  createQueryBuilder: jest.fn(() => mockQueryBuilder),
+} as unknown as EntityManager;
 
 describe('CalendarService', () => {
   let service: CalendarService;
