@@ -62,7 +62,6 @@ export const useCalendar = () => {
     };
 
     setEvents((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
-    console.log('Updated events:', updated);
   };
 
   const viewToUnitOfTime = (view: View): unitOfTime.StartOf => {

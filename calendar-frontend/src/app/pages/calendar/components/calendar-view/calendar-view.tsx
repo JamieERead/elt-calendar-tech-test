@@ -44,7 +44,21 @@ export const CalendarView = ({
     [updateEvent],
   );
 
-  const onEventResize = () => console.log('todo');
+  const onEventResize = useCallback(
+    async ({ event, start, end }: CalendarEventUpdatePayload) => {
+      const updatedEvent: EltEvent = {
+        ...event,
+        start: new Date(start),
+        end: new Date(end),
+      };
+      try {
+        await updateEvent(updatedEvent);
+      } catch (error) {
+        console.error('Resize update failed:', error);
+      }
+    },
+    [updateEvent],
+  );
 
   return (
     <DnDCalendar

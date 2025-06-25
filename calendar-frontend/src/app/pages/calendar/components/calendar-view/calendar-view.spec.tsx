@@ -7,6 +7,7 @@ import '@testing-library/jest-dom';
 describe('CalendarView', () => {
   let onNavigate: (date: Date, view: View) => void;
   let setSelectedEvent: (event: EltEvent) => void;
+  let updateEvent: jest.Mock;
   const mockEvent: EltEvent = {
     id: 100,
     title: 'Mock event',
@@ -16,6 +17,7 @@ describe('CalendarView', () => {
 
   beforeEach(() => {
     onNavigate = jest.fn();
+    updateEvent = jest.fn();
     setSelectedEvent = jest.fn();
     jest.useFakeTimers().setSystemTime(new Date('2024-10-11T10:30:00Z'));
   });
@@ -28,6 +30,7 @@ describe('CalendarView', () => {
     const { container } = render(
       <CalendarView
         onNavigate={onNavigate}
+        updateEvent={updateEvent}
         events={[]}
         showIds={false}
         setSelectedEvent={setSelectedEvent}
@@ -41,6 +44,7 @@ describe('CalendarView', () => {
     const { container } = render(
       <CalendarView
         onNavigate={onNavigate}
+        updateEvent={updateEvent}
         events={[mockEvent]}
         showIds={false}
         setSelectedEvent={setSelectedEvent}
@@ -61,6 +65,7 @@ describe('CalendarView', () => {
     render(
       <CalendarView
         onNavigate={onNavigate}
+        updateEvent={updateEvent}
         events={[mockEvent]}
         showIds={true}
         setSelectedEvent={setSelectedEvent}
