@@ -1,7 +1,7 @@
 import { EltEvent } from '../../../../common/types';
-import { Dispatch } from 'react';
-import { useCalendarToolbar } from '../../hooks/use-calendar-toolbar';
+import { Dispatch, useState } from 'react';
 import { ToolbarStyle } from './styles/calendar-toolbar-style';
+import { AddEventModal } from '../../../../components/add-event-modal';
 
 interface ICalendarToolbarProps {
   addEvent: (event: Omit<EltEvent, 'id'>) => Promise<void>;
@@ -16,7 +16,7 @@ export const CalendarToolbar = ({
   setShowIds,
   selectedEvent,
 }: ICalendarToolbarProps) => {
-  const { createRandomEvent } = useCalendarToolbar(addEvent);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const editEvent = (event?: EltEvent) => {
     console.log('todo');
@@ -24,9 +24,14 @@ export const CalendarToolbar = ({
 
   return (
     <div css={ToolbarStyle}>
-      <button data-testid="add-event-btn" onClick={createRandomEvent}>
+      <button data-testid="add-event-btn" onClick={() => setModalOpen(true)}>
         Add event
       </button>
+      <AddEventModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={({ name, start, end }) => addEvent({ title: name, start, end })}
+      />
       <button
         data-testid="edit-event-btn"
         onClick={() => editEvent(selectedEvent)}

@@ -1,9 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { CalendarToolbar } from './calendar-toolbar';
 import { EltEvent } from '../../../../common/types';
 import { Dispatch } from 'react';
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
 
 describe('CalendarToolbarComponent', () => {
   let addEvent: (event: Omit<EltEvent, 'id'>) => Promise<void>;
@@ -33,7 +32,7 @@ describe('CalendarToolbarComponent', () => {
   });
 
   describe('Add event button', () => {
-    it('should add a random event', async () => {
+    it('should open the AddEventModal when clicking Add event', async () => {
       render(
         <CalendarToolbar
           addEvent={addEvent}
@@ -42,14 +41,11 @@ describe('CalendarToolbarComponent', () => {
         />,
       );
 
-      const btn = screen.getByTestId('add-event-btn');
-      userEvent.click(btn);
+      const addBtn = screen.getByTestId('add-event-btn');
+      await fireEvent.click(addBtn);
 
-      expect(addEvent).toHaveBeenCalledWith({
-        start: expect.any(Date),
-        end: expect.any(Date),
-        title: expect.stringMatching(/Random event \d+/),
-      });
+      expect(screen.getByText('Create New Event')).toBeInTheDocument();
+      expect(screen.getByLabelText(/Event Name:/)).toBeInTheDocument();
     });
   });
 
