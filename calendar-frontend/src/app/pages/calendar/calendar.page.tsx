@@ -6,6 +6,7 @@ export const CalendarPage = () => {
   const {
     events,
     addEvent,
+    updateEvent,
     onNavigate,
     showIds,
     setShowIds,
@@ -24,6 +25,7 @@ export const CalendarPage = () => {
       <CalendarView
         onNavigate={onNavigate}
         events={events}
+        updateEvent={updateEvent}
         showIds={showIds}
         setSelectedEvent={setSelectedEvent}
       />

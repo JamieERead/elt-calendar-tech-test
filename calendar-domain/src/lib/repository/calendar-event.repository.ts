@@ -25,4 +25,21 @@ export class CalendarEventRepository extends EntityRepository<CalendarEventEntit
   async deleteById(id: number): Promise<void> {
     await this.nativeDelete({ id });
   }
+
+  async updateEvent(
+    id: number,
+    name: string,
+    start: Date,
+    end: Date,
+  ): Promise<CalendarEventEntity> {
+    const event = await this.findOne({ id });
+
+    if (!event) return null;
+
+    event.name = name;
+    event.start = start;
+    event.end = end;
+
+    return event;
+  }
 }

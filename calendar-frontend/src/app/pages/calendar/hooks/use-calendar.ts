@@ -46,6 +46,25 @@ export const useCalendar = () => {
     setEvents((events) => [...events, { ...event, id }]);
   };
 
+  const updateEvent = async (event: EltEvent) => {
+    await calendarService.updateEvent(
+      event.id,
+      event.title,
+      moment(event.start),
+      moment(event.end),
+    );
+
+    // to plain Date to keep state consistent
+    const updated = {
+      ...event,
+      start: new Date(event.start ?? ''),
+      end: new Date(event.end ?? ''),
+    };
+
+    setEvents((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
+    console.log('Updated events:', updated);
+  };
+
   const viewToUnitOfTime = (view: View): unitOfTime.StartOf => {
     switch (view) {
       case 'day':
@@ -65,6 +84,7 @@ export const useCalendar = () => {
     setShowIds,
     onNavigate,
     addEvent,
+    updateEvent,
     selectedEvent,
     setSelectedEvent,
   };

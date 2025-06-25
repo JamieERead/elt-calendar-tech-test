@@ -1,10 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CalendarEventRepository } from '@fs-tech-test/calendar-domain';
+import { EntityManager } from '@mikro-orm/knex';
 
 @Injectable()
 export class CalendarService {
   constructor(
     private readonly calendarEventRepository: CalendarEventRepository,
+    private readonly em: EntityManager,
   ) {}
 
   async getEvents(start: string, end: string) {
@@ -28,5 +30,20 @@ export class CalendarService {
 
   async deleteEvent(id: number) {
     await this.calendarEventRepository.deleteById(id);
+  }
+
+  async updateEvent(id: number, payload: EventPayload) {
+    const updated = await this.calendarEventRepository.updateEvent(
+      id,
+      payload.name,
+      new Date(payload.start),
+      new Date(payload.end),
+    );
+
+    if (!updated) {
+      throw new BadRequestException(`Event with ID ${id} not found`);
+    }
+
+    await this.em.flush();
   }
 }
