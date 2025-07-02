@@ -28,8 +28,11 @@ export const CalendarView = ({
 }: ICalendarViewProps) => {
   const { components } = useCalendarView(showIds);
 
-  const onEventDrop = useCallback(
-    async ({ event, start, end }: CalendarEventUpdatePayload) => {
+  const handleEventUpdate = useCallback(
+    async (
+      { event, start, end }: CalendarEventUpdatePayload,
+      context = 'Update',
+    ) => {
       const updatedEvent: EltEvent = {
         ...event,
         start: new Date(start),
@@ -38,26 +41,22 @@ export const CalendarView = ({
       try {
         await updateEvent(updatedEvent);
       } catch (error) {
-        console.error('Drag update failed:', error);
+        console.error(`${context} failed:`, error);
       }
     },
     [updateEvent],
   );
 
+  const onEventDrop = useCallback(
+    (payload: CalendarEventUpdatePayload) =>
+      handleEventUpdate(payload, 'Drag update'),
+    [handleEventUpdate],
+  );
+
   const onEventResize = useCallback(
-    async ({ event, start, end }: CalendarEventUpdatePayload) => {
-      const updatedEvent: EltEvent = {
-        ...event,
-        start: new Date(start),
-        end: new Date(end),
-      };
-      try {
-        await updateEvent(updatedEvent);
-      } catch (error) {
-        console.error('Resize update failed:', error);
-      }
-    },
-    [updateEvent],
+    (payload: CalendarEventUpdatePayload) =>
+      handleEventUpdate(payload, 'Resize update'),
+    [handleEventUpdate],
   );
 
   return (

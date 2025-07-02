@@ -6,3 +6,7 @@ $today-highlight-bg: #f8f4ff;
 
 @import '../../../../../../../../node_modules/react-big-calendar/lib/sass/styles';
 @import '../../../../../../../../node_modules/react-big-calendar/lib/addons/dragAndDrop/styles.css';
+
+.ReactModal__Overlay {
+  z-index: 9999 !important;
+}

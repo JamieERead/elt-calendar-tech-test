@@ -2,6 +2,7 @@ import { EltEvent, EventFormData } from '../../../../common/types';
 import { Dispatch, useState } from 'react';
 import { ToolbarStyle } from './styles/calendar-toolbar-style';
 import { AddEventModal } from '../../../../components/add-event-modal';
+import { AxiosError } from 'axios';
 
 interface ICalendarToolbarProps {
   addEvent: (event: Omit<EltEvent, 'id'>) => Promise<void>;
@@ -30,9 +31,10 @@ export const CalendarToolbar = ({
         await addEvent({ title, start, end });
       }
       setModalOpen(false);
-    } catch (error: any) {
-      if (error?.response?.status === 400 && error?.response?.data?.message) {
-        setError(error.response.data.message);
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ message: string }>;
+      if (err?.response?.status === 400 && err?.response?.data?.message) {
+        setError(err.response.data.message);
       } else {
         setError('Something went wrong.');
       }

@@ -100,6 +100,7 @@ const StyledModal = styled(Modal)`
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   outline: none;
+  z-index: 999;
 `;
 
 const Title = styled.h2`
@@ -115,7 +116,7 @@ const Form = styled.form`
 const Label = styled.label`
   display: flex;
   flex-direction: column;
-  font-size: 0.95rem;
+  font-size: 1rem;
 `;
 
 const Input = styled.input`
